@@ -50,6 +50,13 @@ else()
 endif()
 endif()
 
+find_package(absl CONFIG)
+if(absl_FOUND)
+  MESSAGE(STATUS "System absl found, using")
+else()
+  MESSAGE(STATUS "System absl not found, using bundled version")
+endif()
+
 # Set default build type.
 if(NOT CMAKE_BUILD_TYPE)
   message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
@@ -157,7 +164,9 @@ endif()
 
 include_directories(.)
 include_directories(src)
-include_directories(third_party/abseil-cpp)
+if(NOT absl_FOUND)
+  include_directories(third_party/abseil-cpp)
+endif()
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/src")
 
 # Baseline build flags.
@@ -295,7 +304,9 @@ if(UNIX OR MINGW)
   endif()
 endif()
 
-add_subdirectory(third_party/abseil-cpp)
+if(NOT absl_FOUND)
+  add_subdirectory(third_party/abseil-cpp)
+endif()
 list(APPEND LIBBLOATY_LIBS absl::strings)
 list(APPEND LIBBLOATY_LIBS absl::optional)
 list(APPEND LIBBLOATY_LIBS Threads::Threads)
